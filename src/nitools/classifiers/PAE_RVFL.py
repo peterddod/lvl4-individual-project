@@ -2,11 +2,12 @@ import torch
 from torch import nn
 import numpy as np
 from .AE_RVFL import AE_RVFL
+from ..operations import regpinv, autoencode
 
 
 class PAE_RVFL():  
     
-    def __init__(self, input_size, h_size, out_size=None, subnets=1, device=None, r=(1,1), sc=0.5, sb=0.5):
+    def __init__(self, input_size, h_size, out_size=None, subnets=1, device=None, r=(1,1), sc=0.5, sb=0.5, c=0.1, ae_iters=3, ae=autoencode):
         self._input_size = input_size
         self._h_size = h_size
         self._out_size = out_size
@@ -14,6 +15,7 @@ class PAE_RVFL():
         self._device = device
         self._rvfls = []
         self._r = r
+        self._c = c
 
         self._decision_weights = None
 
@@ -29,6 +31,9 @@ class PAE_RVFL():
                 r = self._r,
                 sb=sb,
                 sc=sc,
+                c=c,
+                ae_iters=ae_iters,
+                ae=ae
             ))
 
         self._activation = torch.relu
@@ -56,6 +61,6 @@ class PAE_RVFL():
             rvfl_out = torch.from_numpy(rvfl_out)
 
         if self._out_size != None:
-            self._decision_weights = torch.pinverse(rvfl_out).mm(y)
+            self._decision_weights = regpinv(rvfl_out, self._c).mm(y)
 
         return rvfl_out               
