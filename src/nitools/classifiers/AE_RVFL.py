@@ -8,7 +8,7 @@ encoded representation to be used for machine learning tasks.
 """
 class AE_RVFL(): 
 
-    def __init__(self, input_size, h_size, device=None, r=(1,1), sb=0.5, sc=0.5, c=0.1, ae_iters=3, ae=autoencode):
+    def __init__(self, input_size, h_size, device=None, r=(1,1), sb=0.5, sc=0.5, c=10, ae_iters=3, ae=autoencode):
         self._input_size = input_size
         self._h_size = h_size
         self._device = device

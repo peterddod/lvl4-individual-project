@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from torch.nn.functional import mse_loss
+from torch.nn.functional import mse_loss, unfold
 import numpy as np
 from sklearn.cluster import MiniBatchKMeans
 import random
@@ -81,12 +81,14 @@ def pretrain(X, a, b, sb=0.5, sc=0.5):
     return a, b
 
 
-def filtersynth(X, k, s=3, stride=1):
+def filtersynth(X, k, s=3, stride=1, padding=0) :
     # input tensor (num_samples, channels, height, width)
     in_size = X.size()
 
     # create clustering algorithm with k clusters
     kmeans = MiniBatchKMeans(k*in_size[1])
+
+    # unfolded = unfold(X, k, None, padding, stride)
 
     # cluster every s[1] x s[1] square on each image 
     for c in range(0,in_size[1]):

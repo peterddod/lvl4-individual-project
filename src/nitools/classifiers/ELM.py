@@ -6,10 +6,11 @@ from ..operations import pretrain, regpinv
 # ELM
 ###############
 class ELM():
-    def __init__(self, input_size, h_size, output_size, device=None):
+    def __init__(self, input_size, h_size, output_size, c=10, device=None):
         self._input_size = input_size
         self._h_size = h_size
         self._output_size = output_size
+        self._c = c
         self._device = device
 
         self._alpha = nn.init.uniform_(torch.empty(self._input_size, self._h_size, device=self._device), a=-1., b=1.)
@@ -31,7 +32,7 @@ class ELM():
         temp = x.mm(self._alpha)
         H = self._activation(torch.add(temp, self._bias))
 
-        H_pinv = regpinv(H)
+        H_pinv = regpinv(H, c=self._c)
         self._beta = H_pinv.mm(t)
 
 
