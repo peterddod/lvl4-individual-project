@@ -108,7 +108,7 @@ def regpinv(X, c=0.1):
     out = []
 
     try:
-        out = torch.pinverse(torch.add(Xt.mm(X), c*torch.eye(len(Xt)))).mm(Xt)
+        out = torch.inverse(torch.add(Xt.mm(X), c*torch.eye(len(Xt)))).mm(Xt)
     except:
         out = torch.pinverse(X)
 
