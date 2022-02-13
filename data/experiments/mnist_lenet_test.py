@@ -1,3 +1,4 @@
+from sklearn.metrics import accuracy_score
 import torch
 from nitools.classifiers import PAE_RVFL, AE_ELM, ELM 
 from nitools.models.LeNet5 import LeNet5
@@ -6,95 +7,95 @@ from nitools.utils import load_mnist
 import time as t
 
 
+def str_params(params):
+    out = ""
+
+    for param, val in params.items():
+        out += f'{param}:{val};'
+    
+    return out
+
 if __name__ == '__main__':
     SEEDS = [22, 432, 63, 754, 3456, 5, 6677, 876, 213, 5444]
     RESULTS_HEADER = 'name, parameters, neurons, seed, acc, train_time, test_time'
     neurons = [250,500,1000,2000,4000]
 
     models = {
-        'baseline-elm': {
-            'model': None,
-            'classifier': ELM.ELM,
-            'parameters': {
-                'h_size': neurons,
-            },
-        },
         'lenet-ae-elm': {
-            'model': LeNet5,
             'classifier': AE_ELM.AE_ELM,
             'parameters': {
                 'h_size': neurons,
-                'weight_train': [True, False],
             },
         },
         'lenet-elm': {
-            'model': LeNet5,
             'classifier': AE_ELM.AE_ELM,
             'parameters': {
                 'h_size': neurons,
-                'weight_train': [True, False],
             },
         },
         'lenet-pae-rvfl': {
-            'model': LeNet5,
             'classifier': PAE_RVFL.PAE_RVFL,
             'parameters': {
                 'h_size': [75,150,300,600,1200],
                 'subnets': [1,2,3,4,6,8,10],
-                'weight_train': [True, False],
             },
         },
     }
+
+    with open('results.csv', 'w') as f:
+        f.write(RESULTS_HEADER + '\n')
+        f.close()
 
     mnist = load_mnist()
 
     mnist_in = 784
     mnist_class = 10
 
-    model = object
-    classifier = object
-    name = string
-    params = {}
-
     X = torch.from_numpy(mnist['train_X']).float()[:60000]
     y = torch.from_numpy(mnist['train_y']).float()[:60000]
+    tX = torch.from_numpy(mnist['test_X']).float()
 
-    for seed in SEEDS:
-        entry = None
+    for name, model in models.items():
+        classifier = model['classifier']
+        params = {}
 
-        if model == None:
-            entry = classifier
-        else:
-            entry = 
+        for seed in SEEDS:
+            for weight_train in [True,False]:
+                model = LeNet5(classifier(params), weight_train=weight_train)
 
-        print('===============================')
-        print(f'{name} - {seed} - {params}')
+                print('\n===============================')
+                print(f'{name} - {seed} - {str_params(params)} - weight_train: {weight_train}')
 
-        # train model
-        print('Starting training...')
-        train_start = t.time_ns()
+                # train model
+                print('Starting training...')
+                train_start = t.time()
 
-        model.train()
+                model.train(X, y)
 
-        train_end = t.time_ns()
-        print('Training finished!')
+                train_end = t.time()
+                print('Training finished!')
 
-        # run prediction 
-        print('Making predictions...')
-        pred_start = t.time_ns()
+                # run prediction 
+                print('Making predictions...')
+                pred_start = t.time()
 
-        model.predict()
+                pred = model.predict(tX)
 
-        pred_end = t.time_ns()
+                pred_end = t.time()
 
-        # get accuracy
-        acc = 8
+                # get accuracy
+                acc =  accuracy_score(pred, mnist['test_y'])
 
-        # create string of tuple (name, parameters, neurons, seed, acc, train_time, test_time)
-        results = f'{name}, {params}, {neurons}, {seed}, {acc}, {train_end-train_start}, {pred_end-pred_start}'
+                # create string of tuple (name, parameters, neurons, seed, acc, train_time, test_time)
+                results = f'{name}, {str_params(params)}, {neurons}, {seed}, {acc}, {train_end-train_start}, {pred_end-pred_start}'
 
-        print(f'''#### RESULTS
-        {RESULTS_HEADER}
-        {results}''')
+                print(f'''#### RESULTS
+                {RESULTS_HEADER}
+                {results}''')
+
+                # append results to file
+                with open('results.csv', 'a') as f:
+                    f.write(results + '\n')
+                    f.close()
 
         

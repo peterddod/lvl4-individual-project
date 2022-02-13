@@ -88,8 +88,6 @@ def filtersynth(X, k, s=3, stride=1, padding=0) :
     # create clustering algorithm with k clusters
     kmeans = MiniBatchKMeans(k*in_size[1])
 
-    # unfolded = unfold(X, k, None, padding, stride)
-
     # cluster every s[1] x s[1] square on each image 
     for c in range(0,in_size[1]):
         for h in range(0,in_size[2]-s,stride):
