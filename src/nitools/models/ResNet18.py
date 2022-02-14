@@ -8,7 +8,7 @@ from ..convolution.ResConv2D import ResConv2D
 
 class ResNet18():
 
-    def __init__(self, classifier):
+    def __init__(self, classifier, weight_train=True):
         self._classifier = classifier
 
         self._model = Pipeline(

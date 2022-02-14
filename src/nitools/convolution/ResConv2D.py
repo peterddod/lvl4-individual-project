@@ -11,7 +11,7 @@ class ResConv2D():
             Conv2D(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, padding=padding, stride=stride),
             nn.BatchNorm2d(out_channels),
             nn.ReLU(),
-            Conv2D(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, padding=padding, stride=stride),
+            Conv2D(in_channels=out_channels, out_channels=out_channels, kernel_size=kernel_size, padding=padding, stride=stride),
             nn.BatchNorm2d(out_channels),
             nn.ReLU(),
         )
