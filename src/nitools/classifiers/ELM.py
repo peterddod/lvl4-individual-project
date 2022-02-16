@@ -6,10 +6,10 @@ from ..operations import pretrain, regpinv
 # ELM
 ###############
 class ELM():
-    def __init__(self, input_size, h_size, output_size, c=10, device=None):
-        self._input_size = input_size
+    def __init__(self, in_size, h_size, out_size, c=10, device=None):
+        self._input_size = in_size
         self._h_size = h_size
-        self._output_size = output_size
+        self._output_size = out_size
         self._c = c
         self._device = device
 

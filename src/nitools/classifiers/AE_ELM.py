@@ -7,10 +7,10 @@ from ..operations import regpinv, autoencode
 # ELM
 ###############
 class AE_ELM():
-    def __init__(self, input_size, h_size, output_size, ae_iters=3, c=10, device=None):
-        self._input_size = input_size
+    def __init__(self, in_size, h_size, out_size, ae_iters=3, c=10, device=None):
+        self._input_size = in_size
         self._h_size = h_size
-        self._output_size = output_size
+        self._output_size = out_size
         self._device = device
         self._c = c
         self._ae_iters = ae_iters

@@ -7,8 +7,8 @@ from ..operations import regpinv, autoencode
 
 class PAE_RVFL():  
     
-    def __init__(self, input_size, h_size, out_size=None, subnets=1, device=None, r=(1,1), sc=0.5, sb=0.5, c=10, ae_iters=3, ae=autoencode):
-        self._input_size = input_size
+    def __init__(self, in_size, h_size, out_size=None, subnets=1, device=None, r=(1,1), sc=0.5, sb=0.5, c=10, ae_iters=3, ae=autoencode):
+        self._input_size = in_size
         self._h_size = h_size
         self._out_size = out_size
         self._subnets = subnets

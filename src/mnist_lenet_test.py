@@ -40,9 +40,11 @@ def combine_params(params, name, def_params):
 
     return {**def_params, **params_dict}
 
-def run_experiment(model):
+def run_experiment(model, name, seed, params, weight_train):
     print('\n===============================')
     print(f'{name} - {seed} - {str_params(params)} - weight_train: {weight_train}')
+
+    resetseed(seed)
 
     # train model
     print('Starting training...')
@@ -60,12 +62,17 @@ def run_experiment(model):
     pred = model.predict(tX)
 
     pred_end = t.time()
+    
+    pred_arg = torch.zeros(10000)
+
+    for i in range(len(pred)):
+        pred_arg[i] = torch.argmax(pred[i])
 
     # get accuracy
-    acc =  accuracy_score(pred, mnist['test_y'])
+    acc =  accuracy_score(pred_arg, mnist['test_y'])
 
-    # create string of tuple (name, parameters, neurons, seed, acc, train_time, test_time)
-    results = f'{name}, {str_params(params)}, {neurons}, {seed}, {acc}, {train_end-train_start}, {pred_end-pred_start}'
+    # create string of tuple (name, parameters, neurons, , weight_train, seed, acc, train_time, test_time)
+    results = f'{name}, {str_params(params)}, {params["h_size"]}, {weight_train}, {seed}, {acc}, {train_end-train_start}, {pred_end-pred_start}'
 
     print(f'''#### RESULTS
     {RESULTS_HEADER}
@@ -80,25 +87,25 @@ def run_experiment(model):
 if __name__ == '__main__':
     # Initialise variables
     SEEDS = [22, 432, 63, 754, 3456, 5, 6677, 876, 213, 5444]
-    RESULTS_HEADER = 'name, parameters, neurons, seed, acc, train_time, test_time'
+    RESULTS_HEADER = 'name, parameters, neurons, weight_train, seed, acc, train_time, test_time'
     neurons = [250,500,1000,2000,4000]
 
     # Initialise modles
     models = {
         'lenet-ae-elm': {
-            'classifier': ELM.ELM,
+            'classifier': AE_ELM,
             'parameters': {
                 'h_size': neurons,
             },
         },
         'lenet-elm': {
-            'classifier': AE_ELM.AE_ELM,
+            'classifier': ELM,
             'parameters': {
                 'h_size': neurons,
             },
         },
         'lenet-pae-rvfl': {
-            'classifier': PAE_RVFL.PAE_RVFL,
+            'classifier': PAE_RVFL,
             'parameters': {
                 'h_size': [75,150,300,600,1200],
                 'subnets': [1,2,3,4,6,8,10],
@@ -125,7 +132,7 @@ if __name__ == '__main__':
     for name, model in models.items():
         classifier = model['classifier']
 
-        params_list, param_names = get_params(classifier['parameters'])
+        params_list, param_names = get_params(model['parameters'])
 
         def_params = {
             'c': 10,
@@ -138,9 +145,9 @@ if __name__ == '__main__':
 
             for seed in SEEDS:
                 for weight_train in [True,False]:
-                    model = LeNet5(classifier(in_params), weight_train=weight_train)
+                    model_full = LeNet5(classifier(**in_params), weight_train=weight_train)
 
-                    run_experiment(model)
+                    run_experiment(model_full, name, seed, in_params, weight_train)
 
 
         
