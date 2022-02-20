@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import numpy as np
 from ..operations import regpinv, autoencode
+import asyncio
+import aiohttp
 
 ###############
 # ELM
@@ -48,7 +50,6 @@ class PAE_ELM():
         alpha, bias = autoencode(x, h_size=self._h_size, l=self._ae_iters, c=self._c)[0:2]
         H = self._activation(torch.add(x.mm(alpha), bias))
         self._subnets[0] = (alpha, bias)
-
 
         for i in range(1, self._subnets_len):
             alpha, bias = autoencode(x, h_size=self._h_size, l=self._ae_iters, c=self._c)[0:2]
