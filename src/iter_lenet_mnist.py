@@ -1,22 +1,21 @@
 from iter import model
 import numpy as np
 import torch
-from torchvision.datasets import mnist
 from torch.nn import CrossEntropyLoss
 from torch.optim import SGD, Adam
 from torch.utils.data import DataLoader
-from torchvision.transforms import ToTensor
+from mnist import MNIST
 
 if __name__ == '__main__':
-    batch_size = 256
-    train_dataset = mnist.MNIST(root='./train', train=True, transform=ToTensor(), download=True)
-    test_dataset = mnist.MNIST(root='./test', train=False, transform=ToTensor(), download=True)
-    train_loader = DataLoader(train_dataset, batch_size=batch_size)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size)
+    batch_size = 16
+    mnist_train = MNIST(train=True)
+    mnist_test = MNIST(train=False)
+    train_loader = DataLoader(mnist_train, batch_size=batch_size)
+    test_loader = DataLoader(mnist_test, batch_size=batch_size)
     model = model.Model()
-    sgd = SGD(model.parameters(), lr=1e-1)
+    sgd = Adam(model.parameters(), lr=0.01)
     cost = CrossEntropyLoss()
-    epoch = 50
+    epoch = 2
 
     for _epoch in range(epoch):
         model.train()

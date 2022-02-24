@@ -1,4 +1,3 @@
-from calendar import c
 import torch
 import torch.nn as nn
 from ..operations import regpinv, autoencode
@@ -11,6 +10,7 @@ class AE_ELM():
         self._input_size = in_size
         self._h_size = h_size
         self._output_size = out_size
+        
         self._device = device
         self._c = c
         self._ae_iters = ae_iters

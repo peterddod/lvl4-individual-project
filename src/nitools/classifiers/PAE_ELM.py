@@ -3,7 +3,6 @@ import torch.nn as nn
 import numpy as np
 from ..operations import regpinv, autoencode
 import asyncio
-import aiohttp
 
 ###############
 # ELM
