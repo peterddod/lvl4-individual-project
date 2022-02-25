@@ -18,6 +18,6 @@ class MNIST(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        sample = {f'{self._type}_X': self.data[f'{self._type}_X'][idx], f'{self._type}_y': self.data[f'{self._type}_y'][idx]}
+        sample = (self.data[f'{self._type}_X'][idx], self.data[f'{self._type}_y'][idx])
 
         return sample
