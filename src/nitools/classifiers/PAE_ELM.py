@@ -1,15 +1,14 @@
 import torch
 import torch.nn as nn
+import torch.multiprocessing as mp
 import numpy as np
 from ..operations import regpinv, autoencode
-import asyncio
-import aiohttp
 
 ###############
 # ELM
 ###############
 class PAE_ELM():
-    def __init__(self, in_size, h_size, out_size, ae_iters=3, subnets=1, c=10, device=None):
+    def __init__(self, in_size, h_size, out_size, ae_iters=3, subnets=1, c=10, workers=4, device=None):
         self._input_size = in_size
         self._h_size = h_size
         self._output_size = out_size
@@ -18,6 +17,8 @@ class PAE_ELM():
         self._ae_iters = ae_iters
         self._subnets = []
         self._subnets_len = subnets
+        self._workers = workers
+        self._x = None
 
         for i in range(self._subnets_len):
             alpha = nn.init.uniform_(torch.empty(self._input_size, self._h_size, device=self._device), a=-1., b=1.)            
@@ -27,6 +28,22 @@ class PAE_ELM():
         self._beta = nn.init.uniform_(torch.empty(self._h_size, self._output_size, device=self._device), a=-1., b=1.)
 
         self._activation = torch.relu
+
+    def _train_subnet(self, i):
+        alpha, bias = autoencode(self._x, h_size=self._h_size, l=self._ae_iters, c=self._c)[0:2]
+        self._subnets[i] = (alpha, bias)
+
+    def _train_all_subnets(self, x):
+        self._x = x
+        with mp.Pool() as pool:
+            pool.map(self._train_subnet, range(self._subnets_len))
+
+        H = self._activation(torch.add(x.mm(self._subnets[0][0]), self._subnets[0][1]))
+
+        for i in range(1, self._subnets_len):
+            H = np.hstack((H, self._activation(torch.add(x.mm(self._subnets[i][0]), self._subnets[i][1]))))
+
+        return torch.tensor(H).float().detach()
 
     def predict(self, x):
         alpha = self._subnets[0][0]
@@ -47,17 +64,7 @@ class PAE_ELM():
         return out
 
     def train(self, x, t):
-        alpha, bias = autoencode(x, h_size=self._h_size, l=self._ae_iters, c=self._c)[0:2]
-        H = self._activation(torch.add(x.mm(alpha), bias))
-        self._subnets[0] = (alpha, bias)
-
-        for i in range(1, self._subnets_len):
-            alpha, bias = autoencode(x, h_size=self._h_size, l=self._ae_iters, c=self._c)[0:2]
-            h = self._activation(torch.add(x.mm(alpha), bias))
-            self._subnets[i] = (alpha, bias)
-            H = np.hstack((H, h))
-
-        H = torch.tensor(H).float().detach()
+        H = self._train_all_subnets(x)
         H_pinv = regpinv(H, c=self._c)
         self._beta = H_pinv.mm(t)
 

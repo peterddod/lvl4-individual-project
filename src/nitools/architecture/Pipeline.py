@@ -12,6 +12,8 @@ class Pipeline():
     def forward(self, X):
         for module in self._pipeline:
             X = module(X)
+            print('completed forward')
+            print(X.size())
 
         return X
 
