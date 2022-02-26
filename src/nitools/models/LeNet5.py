@@ -18,7 +18,7 @@ class LeNet5():
                 nn.BatchNorm2d(6),
                 nn.ReLU(),
                 nn.MaxPool2d(kernel_size=2, stride=2),
-                Conv2D(in_channels=6, out_channels=16, kernel_size=5, padding=2, stride=1), 
+                Conv2D(in_channels=6, out_channels=16, kernel_size=5, stride=1), 
                 nn.BatchNorm2d(16),
                 nn.ReLU(),
                 nn.MaxPool2d(kernel_size=2, stride=2),
@@ -30,7 +30,7 @@ class LeNet5():
                 nn.BatchNorm2d(6),
                 nn.ReLU(),
                 nn.MaxPool2d(kernel_size=2, stride=2),
-                Conv2d(in_channels=6, out_channels=16, kernel_size=5, padding=2, stride=1), 
+                Conv2d(in_channels=6, out_channels=16, kernel_size=5, stride=1), 
                 nn.BatchNorm2d(16),
                 nn.ReLU(),
                 nn.MaxPool2d(kernel_size=2, stride=2),
@@ -42,7 +42,7 @@ class LeNet5():
         n = int(X.size()[0])
         
         X = self._model(torch.reshape(X, (n, 1, w_h, w_h)))
-        C = torch.reshape(X, (n, w_h**2)).detach()
+        C = torch.reshape(X, (n, 400)).detach()
 
         y = self._classifier.predict(C)
 
@@ -54,6 +54,6 @@ class LeNet5():
         n = int(X.size()[0])
         
         X = self._model.train(torch.reshape(X, (n, 1, w_h, w_h)))
-        C = torch.reshape(X, (n, w_h**2)).detach()
+        C = torch.reshape(X, (n, 400)).detach()
 
         H = self._classifier.train(C, y) 
