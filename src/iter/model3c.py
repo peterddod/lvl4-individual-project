@@ -16,7 +16,7 @@ class Model3c(Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Flatten(),
-            nn.Linear(400, 120),
+            nn.Linear(576, 120),
             nn.ReLU(),
             nn.Linear(120, 84),
             nn.ReLU(),
@@ -26,4 +26,4 @@ class Model3c(Module):
     def forward(self, x):
         w_h = int(sqrt(x.size()[1]))
         n = int(x.size()[0])
-        return self.model(reshape(x, (n, 1, w_h, w_h)))
+        return self.model(reshape(x, (n, 3, 32, 32)))

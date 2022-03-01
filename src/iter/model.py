@@ -23,6 +23,9 @@ class Model(Module):
             nn.Linear(84, 10),
         )
 
+    def __getitem__(self, index):
+        return self.model[index]
+
     def forward(self, x):
         w_h = int(sqrt(x.size()[1]))
         n = int(x.size()[0])

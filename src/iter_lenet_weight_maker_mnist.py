@@ -1,27 +1,29 @@
-from iter import model3c
+from iter import Model
+from nitools.operations import resetseed
 import numpy as np
 import torch
 from torch.nn import CrossEntropyLoss, MSELoss
 from torch.optim import SGD, Adam
 from torch.utils.data import DataLoader
-from cifar import CIFAR10
+from mnist import MNIST
 import time as t
 
-PATH = '/weights/'
+PATH = 'weights/'
 
 if __name__ == '__main__':
     batch_size = 16
-    cifar_train = CIFAR10(train=True)
-    cifar_test = CIFAR10(train=False)
-    train_loader = DataLoader(cifar_train, batch_size=batch_size)
-    test_loader = DataLoader(cifar_test, batch_size=batch_size)
-    model = model3c.Model()
-    sgd = Adam(model.parameters(), lr=0.001)
+    mnist_train = MNIST(train=True)
+    mnist_test = MNIST(train=False)
+    train_loader = DataLoader(mnist_train, batch_size=batch_size)
+    test_loader = DataLoader(mnist_test, batch_size=batch_size)
+    model = Model()
+    sgd = Adam(model.parameters(), lr=0.01)
     cost = MSELoss()
-    SEEDS = [22, 432, 63, 754, 3456]#, 5, 6677, 876, 213, 5444]
+    SEEDS = [22, 432, 63, 754, 3456, 5, 6677, 876, 213, 5444]
 
-    for epoch in [50]:
+    for epoch in [2]:
         for seed in SEEDS:
+            resetseed(seed)
             start = t.time()
             for _epoch in range(epoch):
                 model.train()
@@ -47,7 +49,8 @@ if __name__ == '__main__':
                     _sum += _.shape[0]
 
                 acc = correct / _sum
-                print('accuracy: {:.2f}'.format(acc))
+                print(acc)
+                print('accuracy: {:.2f}'.format(np.mean(acc)))
             end = t.time() 
 
             torch.save(model[0].state_dict(), f'{PATH}{seed}-1.pth')
