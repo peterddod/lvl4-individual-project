@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from torch import nn, sqrt
+from torch.nn.utils.parametrizations import orthogonal
 from ..architecture.Pipeline import Pipeline
 from ..convolution.Conv2D import Conv2D
 from torch.nn import Conv2d
@@ -14,11 +15,11 @@ class LeNet5():
 
         if weight_train:
             self._model = Pipeline(
-                Conv2D(in_channels=1, out_channels=6, kernel_size=5, padding=2, stride=1),   
+                orthogonal(Conv2d(in_channels=1, out_channels=6, kernel_size=5, padding=2, stride=1)),   
                 nn.BatchNorm2d(6),
                 nn.ReLU(),
                 nn.MaxPool2d(kernel_size=2, stride=2),
-                Conv2D(in_channels=6, out_channels=16, kernel_size=5, stride=1), 
+                orthogonal(Conv2d(in_channels=6, out_channels=16, kernel_size=5, stride=1)), 
                 nn.BatchNorm2d(16),
                 nn.ReLU(),
                 nn.MaxPool2d(kernel_size=2, stride=2),
