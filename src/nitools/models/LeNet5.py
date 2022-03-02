@@ -38,6 +38,9 @@ class LeNet5():
                 nn.Flatten(),
             )
     
+    def __getitem__(self, index):
+        return self._model[index]
+
     def predict(self, X):
         w_h = int(np.sqrt(X.size()[1]))
         n = int(X.size()[0])
