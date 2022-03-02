@@ -135,8 +135,8 @@ if __name__ == '__main__':
                 # Pre-trained weights
                 model_full = LeNet5(classifier(**in_params), weight_train=False)
 
-                model_full[0].load_state_dict(torch.load('weights/{seed}-1.pth'))
-                model_full[3].load_state_dict(torch.load('weights/{seed}-2.pth'))
+                model_full[0].load_state_dict(torch.load(f'weights/{seed}-1.pth'))
+                model_full[3].load_state_dict(torch.load(f'weights/{seed}-2.pth'))
 
                 run_experiment(model_full, name, seed, in_params, 'pre_train')
 
