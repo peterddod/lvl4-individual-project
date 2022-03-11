@@ -1,5 +1,6 @@
 from keras.datasets import mnist, cifar10
 import numpy as np
+from torch import reshape, from_numpy
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import precision_score
@@ -39,6 +40,10 @@ def load_mnist(scaled=True):
 
 def load_cifar10(scaled=True):
     (train_X, train_y), (test_X, test_y) = cifar10.load_data()
+
+
+    train_X = reshape(from_numpy(train_X), (50000, 3, 32, 32))
+    test_X = reshape(from_numpy(test_X), (10000, 3, 32, 32))
 
     if scaled:
         train_X = scale(train_X)

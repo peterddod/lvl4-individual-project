@@ -54,4 +54,4 @@ if __name__ == '__main__':
             end = t.time() 
 
             torch.save(model[0].state_dict(), f'{PATH}{seed}-1.pth')
-            torch.save(model[3].state_dict(), f'{PATH}{seed}-2.pth')
+            torch.save(model[4].state_dict(), f'{PATH}{seed}-2.pth')

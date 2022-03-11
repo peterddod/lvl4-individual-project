@@ -7,7 +7,7 @@ from ..operations import regpinv, autoencode
 ###############
 # ELM
 ###############
-class PAE_ELM():
+class bPAE_ELM():
     def __init__(self, in_size, h_size, out_size, ae_iters=3, subnets=1, c=10, device=None):
         self._input_size = in_size
         self._h_size = h_size
@@ -17,6 +17,7 @@ class PAE_ELM():
         self._ae_iters = ae_iters
         self._subnets = []
         self._subnets_len = subnets
+        self._samples_trained = 0
 
         for i in range(self._subnets_len):
             alpha = nn.init.uniform_(torch.empty(self._input_size, self._h_size, device=self._device), a=-1., b=1.)            
@@ -51,23 +52,51 @@ class PAE_ELM():
         return out
 
     def train(self, x, t):
-        alpha, bias = autoencode(x, h_size=self._h_size, l=self._ae_iters, c=self._c)[0:2]
-        h_1 = self._activation(torch.add(x.mm(alpha), bias))
-        h_2 = self._activation2(torch.add(x.mm(alpha), bias))
-        H = torch.add(h_1, h_2)
-        self._subnets[0] = (alpha, bias)
+        n = x.size[0]
+        self._samples_trained += n
 
-        for i in range(1, self._subnets_len):
+        if self._samples_trained == n:
             alpha, bias = autoencode(x, h_size=self._h_size, l=self._ae_iters, c=self._c)[0:2]
             h_1 = self._activation(torch.add(x.mm(alpha), bias))
             h_2 = self._activation2(torch.add(x.mm(alpha), bias))
-            h = torch.add(h_1, h_2)
-            self._subnets[i] = (alpha, bias)
-            H = np.hstack((H, h))
+            H = torch.add(h_1, h_2)
+            self._subnets[0] = (alpha, bias)
 
-        H = torch.tensor(H).float().detach()
-        H_pinv = regpinv(H, c=self._c)
-        self._beta = H_pinv.mm(t)
+            for i in range(1, self._subnets_len):
+                alpha, bias = autoencode(x, h_size=self._h_size, l=self._ae_iters, c=self._c)[0:2]
+                h_1 = self._activation(torch.add(x.mm(alpha), bias))
+                h_2 = self._activation2(torch.add(x.mm(alpha), bias))
+                h = torch.add(h_1, h_2)
+                self._subnets[i] = (alpha, bias)
+                H = np.hstack((H, h))
+
+            H = torch.tensor(H).float().detach()
+            H_pinv = regpinv(H, c=self._c)
+            self._beta = H_pinv.mm(t)
+        else:
+            alpha = self._subnets[0][0]
+            bias = self._subnets[0][1]
+
+            h_1 = self._activation(torch.add(x.mm(alpha), bias))
+            h_2 = self._activation2(torch.add(x.mm(alpha), bias))
+            H = torch.add(h_1, h_2)
+
+            for i in range(1, self._subnets_len):
+                alpha = self._subnets[i][0]
+                bias = self._subnets[i][1]
+
+                h_1 = self._activation(torch.add(x.mm(alpha), bias))
+                h_2 = self._activation2(torch.add(x.mm(alpha), bias))
+                h = torch.add(h_1, h_2)
+                H = np.hstack((H, h))
+                
+            H = torch.tensor(H).float().detach()
+
+            H_pinv = regpinv(H, c=self._c)
+            beta = H_pinv.mm(t)
+
+            adj = self._beta - beta
+            self._beta -= adj*0.1#(n/self._samples_trained)
 
     def evaluate(self, x, t):
         y_pred = self.predict(x)

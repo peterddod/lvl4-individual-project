@@ -12,18 +12,20 @@ class Pipeline():
     def forward(self, X):
         for module in self._pipeline:
             X = module(X)
-
+        
         return X
 
-    def train(self, X):
-        for module in self._pipeline:
-            try:
-                temp = module.train(X)
-                X = temp
-            except:
-                temp = module(X)
-                X = temp
-                
-
+    def train(self, X, y=None):
+        if y == None:
+            for module in self._pipeline:
+                X = module(X)
+        else:
+            for module in self._pipeline:
+                try:
+                    temp = module.train(X, y)
+                    X = temp
+                except:
+                    X = module(X)
+        
         return X
             
