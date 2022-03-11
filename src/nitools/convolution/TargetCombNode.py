@@ -35,7 +35,7 @@ class TargetCombNode():
 
         self._beta = X_pinv.mm(y)
 
-        std = sqrt(size[1])/sqrt(6)
+        std = sqrt(size[1])/self._lambda
 
         o = X.mm(self._beta)
 

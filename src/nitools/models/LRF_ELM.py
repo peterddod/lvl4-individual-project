@@ -22,7 +22,8 @@ class LRF_ELM():
             nn.BatchNorm2d(48),
             SqrtPool2D(kernel_size=3, same=True),
             nn.MaxPool2d(kernel_size=2,stride=2),
-            # ResBlock(channels=48, rf=3, _lambda=_lambda, p=p),
+            ResBlock(channels=48, rf=3, _lambda=_lambda, p=p),
+            ResBlock(channels=48, rf=3, _lambda=_lambda, p=p),
             nn.Flatten(),
         )
     
