@@ -9,23 +9,23 @@ from torch.nn import Conv2d
 
 class LRF_ELMplus():
 
-    def __init__(self, in_channels=1):
+    def __init__(self, in_channels=1, _lambda=1, c=10):
         self._classifier = None
         self._model = []
+        self._c = c
 
         self._model = Pipeline(
-            OrthoConv2D(in_channels=in_channels, out_channels=48, kernel_size=3, padding=1, stride=1),
-            nn.BatchNorm2d(48),
+            OrthoConv2D(in_channels=in_channels, out_channels=32, kernel_size=3, padding=2, stride=1),
+            nn.BatchNorm2d(32),
             SqrtPool2D(kernel_size=2, same=True),
             nn.MaxPool2d(kernel_size=2,stride=2),
-            ResBlock(channels=48, rf=3, p=0),
-            ResBlock(channels=48, rf=3, p=0),
-            ResBlock(channels=48, rf=3, p=0),
+            OrthoConv2D(in_channels=32, out_channels=80, kernel_size=3, padding=2, stride=1),
+            nn.BatchNorm2d(80),
+            SqrtPool2D(kernel_size=3, same=True),
             nn.MaxPool2d(kernel_size=2,stride=2),
-            # OrthoConv2D(in_channels=16, out_channels=32, kernel_size=3, padding=2, stride=1),
-            # # nn.BatchNorm2d(32),
-            # # SqrtPool2D(kernel_size=3, same=True),
-            # nn.MaxPool2d(kernel_size=2,stride=2),
+            ResBlock(channels=80, rf=3, p=0, _lambda=_lambda),
+            # ResBlock(channels=64, rf=3, p=0, _lambda=_lambda),
+            nn.MaxPool2d(kernel_size=2,stride=2),
             nn.Flatten(),
         )
     
@@ -57,6 +57,7 @@ class LRF_ELMplus():
             h_size=1200,
             out_size=10,
             subnets=3,
+            c=self._c,
             )
 
         H = self._classifier.train(C, y) 

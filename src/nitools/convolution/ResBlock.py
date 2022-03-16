@@ -6,18 +6,20 @@ from nitools import convolution as ni
 
 class ResBlock():
 
-    def __init__(self, channels=6, rf=5, pool_kernel=2, p=0, _lambda=0.1):
+    def __init__(self, channels=6, rf=5, pool_kernel=2, p=0, _lambda=0.1, device=None):
+        self._device = device
+
         self._layer = Pipeline(
-            ni.TargetCombNode(_lambda=_lambda),
-            nn.BatchNorm2d(channels),
-            ni.OrthoConv2D(in_channels=channels, out_channels=channels, kernel_size=rf, padding='same', stride=1),
-            nn.BatchNorm2d(channels),
+            ni.TargetCombNode(_lambda=_lambda, device=self._device),
+            nn.BatchNorm2d(channels, device=self._device),
+            ni.OrthoConv2D(in_channels=channels, out_channels=channels, kernel_size=rf, padding='same', stride=1, device=self._device),
+            nn.BatchNorm2d(channels, device=self._device),
             ni.SqrtPool2D(kernel_size=pool_kernel, same=True),
-            ni.TargetCombNode(_lambda=_lambda),
-            nn.BatchNorm2d(channels),
-            ni.OrthoConv2D(in_channels=channels, out_channels=channels, kernel_size=1, padding='same', stride=1),
+            ni.TargetCombNode(_lambda=_lambda, device=self._device),
+            nn.BatchNorm2d(channels, device=self._device),
+            ni.OrthoConv2D(in_channels=channels, out_channels=channels, kernel_size=1, padding='same', stride=1, device=self._device),
             nn.Dropout2d(p),
-            nn.BatchNorm2d(channels),
+            nn.BatchNorm2d(channels, device=self._device),
             ni.SqrtPool2D(kernel_size=pool_kernel, same=True),
         )
 
