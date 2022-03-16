@@ -13,14 +13,15 @@ class OrthoConv2D(nn.Module):
         self._padding = padding
         self._stride = stride
         self._device = device
-        self._weights = orthogonal_(normal_(torch.empty(out_channels,in_channels,kernel_size,kernel_size, device=self._device)))
+        self._weights = orthogonal_(normal_(torch.empty(out_channels,in_channels,kernel_size,kernel_size))).to(self._device)
 
     def __call__(self, arg):
         return self.forward(arg)
 
     def forward(self, X):
+        X = X.to(self._device)
         return conv2d(X, self._weights, None, stride=self._stride, padding=self._padding).to(self._device)
 
     def train(self, X):
-        X.detach()  
+        X = X.to(self._device) 
         return conv2d(X, self._weights, None, stride=self._stride, padding=self._padding).to(self._device)

@@ -150,11 +150,11 @@ def load_fashionmnist(scaled=True, label_smoothing=0.1, augment=True, zca_whiten
         'test_y': test_y,
     }
 
-def load_norb(scaled=True, label_smoothing=0.1, augment=True, zca_whitening=False):
+def load_norb(scaled=True, label_smoothing=0.1, augment=False, zca_whitening=False):
     ds = tfds.load('smallnorb', split=['train', 'test'], as_supervised=True, batch_size=-1)
 
-    train_X = VF.resize(reshape(from_numpy(ds[0][0].numpy()), (-1, 1, 96, 96)).float(), (32,32))
-    test_X = VF.resize(reshape(from_numpy(ds[1][0].numpy()), (-1, 1, 96, 96)).float(), (32,32))
+    train_X = VF.resize(reshape(from_numpy(ds[0][0].numpy()), (-1, 1, 96, 96)).type(torch.uint8), (32,32))
+    test_X = VF.resize(reshape(from_numpy(ds[1][0].numpy()), (-1, 1, 96, 96)).type(torch.uint8), (32,32))
 
     if augment:
         augmenter = AutoAugment(AutoAugmentPolicy.SVHN)

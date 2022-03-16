@@ -67,7 +67,7 @@ def run_experiment(model, name, seed, params, data, dataset, n=10000, nt=10000):
 
     pred_end = t.time()
     
-    pred_arg = torch.zeros(nt)
+    pred_arg = torch.zeros(len(tX))
 
     for i in range(len(pred)):
         pred_arg[i] = torch.argmax(pred[i])
@@ -76,7 +76,7 @@ def run_experiment(model, name, seed, params, data, dataset, n=10000, nt=10000):
     acc =  accuracy_score(pred_arg, data['test_y'][:nt])
 
     # create string of tuple ('name,subnets,h_size,seed,acc,train_time,test_time')
-    results = f'{name},{dataset}{params["subnets"]},{params["h_size"]},{seed},{acc},{train_end-train_start},{pred_end-pred_start}'
+    results = f'{name},{dataset},{params["subnets"]},{params["h_size"]},{seed},{acc},{train_end-train_start},{pred_end-pred_start}'
 
     print(f'''#### RESULTS
     {RESULTS_HEADER}
@@ -91,7 +91,7 @@ def run_experiment(model, name, seed, params, data, dataset, n=10000, nt=10000):
 if __name__ == '__main__':
     # Initialise variables
     SEEDS = [22, 432, 63, 754, 3456, 5, 6677, 876, 213, 5444]
-    RESULTS_HEADER = 'name,subnets,h_size,seed,acc,train_time,test_time'
+    RESULTS_HEADER = 'name,dataset,subnets,h_size,seed,acc,train_time,test_time'
 
     # Initialise modles
     models = {
@@ -108,7 +108,8 @@ if __name__ == '__main__':
         f.write(RESULTS_HEADER + '\n')
         f.close()
 
-    for i, loader in enumerate([load_mnist, load_fashionmnist, load_norb]):
+    # for i, loader in enumerate([load_mnist, load_fashionmnist, load_norb]):
+    for i, loader in enumerate([load_norb]):
         data = loader()
 
         for name, model in models.items():
@@ -122,9 +123,9 @@ if __name__ == '__main__':
                 in_params = combine_params(params, param_names, def_params)
 
                 for seed in SEEDS:
-                    model_full = LeNetPlus(**in_params)
+                    model_full = LeNetPlus(**in_params, device=torch.device('cpu'))
 
-                    run_experiment(model_full, name, seed, in_params, data, i)
+                    run_experiment(model_full, name, seed, in_params, data, i, n=25000, nt=25000)
 
 
         
