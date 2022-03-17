@@ -7,20 +7,20 @@ class Model(Module):
     def __init__(self):
         super(Model, self).__init__()
         self.model = nn.Sequential(
-            nn.Conv2d(in_channels=1, out_channels=6, kernel_size=5, padding=2, stride=1),   
-            nn.BatchNorm2d(6),
+            nn.Conv2d(in_channels=1, out_channels=8, kernel_size=3, padding=2, stride=1),   
+            nn.BatchNorm2d(8),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.Conv2d(in_channels=6, out_channels=16, kernel_size=5, stride=1), 
-            nn.BatchNorm2d(16),
+            nn.Conv2d(in_channels=8, out_channels=48, kernel_size=3, stride=1, padding=2), 
+            nn.BatchNorm2d(48),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Flatten(),
-            nn.Linear(400, 120),
+            nn.LazyLinear(240),
             nn.ReLU(),
-            nn.Linear(120, 84),
+            nn.Linear(240, 172),
             nn.ReLU(),
-            nn.Linear(84, 10),
+            nn.Linear(172, 10),
         )
 
     def __getitem__(self, index):

@@ -1,11 +1,11 @@
 import torch
 from torch.utils.data import Dataset
-from nitools.utils import load_mnist
+from nitools.utils import load_fashionmnist
 
 class MNIST(Dataset):
 
-    def __init__(self, train=True, scaled=False):
-        self.data = load_mnist(scaled)
+    def __init__(self, train=True, scaled=False, augment=False, label_smoothing=0.1):
+        self.data = load_fashionmnist(scaled, label_smoothing, augment)
         self._type = "test"
 
         if train:
