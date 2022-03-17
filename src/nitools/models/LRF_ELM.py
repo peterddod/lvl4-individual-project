@@ -2,8 +2,8 @@ import numpy as np
 import torch
 from torch import nn, sqrt
 from nitools.architecture import Pipeline
-from nitools.convolution import OrthoConv2D, SqrtPool2D, ResBlock, TargetCombNode
-from nitools.classifiers import PAE_ELM, ELM
+from nitools.convolution import OrthoConv2D, SqrtPool2D, ResBlock
+from nitools.classifiers import PAE_ELM
 
 
 class LRF_ELM():
@@ -23,7 +23,6 @@ class LRF_ELM():
             SqrtPool2D(kernel_size=3, same=True),
             nn.MaxPool2d(kernel_size=2,stride=2),
             ResBlock(channels=48, rf=3, _lambda=_lambda, p=p, lr=lr),
-            # ResBlock(channels=48, rf=3, _lambda=_lambda, p=p),
             nn.Flatten(),
         )
     
