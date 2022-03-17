@@ -1,9 +1,10 @@
-from iter import model
+from iter import Model
 import numpy as np
-from torch.nn import CrossEntropyLoss
+from torch.nn import CrossEntropyLoss, MSELoss
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 from datasets import MNIST, FSHN_MNIST, NORB
+from nitools.operations import resetseed
 import time as t
 
 if __name__ == '__main__':
@@ -16,6 +17,9 @@ if __name__ == '__main__':
         f.close()
 
     for i, data in enumerate([MNIST,FSHN_MNIST,NORB]):
+        if (data==MNIST or data==FSHN_MNIST):
+            continue
+
         data_train = data(train=True)
         data_test = data(train=False)
         train_loader = DataLoader(data_train, batch_size=batch_size)
@@ -23,15 +27,17 @@ if __name__ == '__main__':
 
         for epoch in [1,2,3]:
             for seed in SEEDS:
-                model = model.Model()
+                resetseed(seed)
+                model = Model(out_size=5)
                 sgd = Adam(model.parameters(), lr=0.01)
+
                 cost = CrossEntropyLoss()
                 
                 start = t.time()
                 for _epoch in range(epoch):
                     model.train()
                     for idx, (train_x, train_label) in enumerate(train_loader):
-                        label_np = np.zeros((train_label.shape[0], 10))
+                        label_np = np.zeros(train_label.size())
                         sgd.zero_grad()
                         predict_y = model(train_x.float())
                         loss = cost(predict_y, train_label.float())

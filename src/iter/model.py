@@ -4,7 +4,7 @@ from numpy import sqrt
 
 
 class Model(Module):
-    def __init__(self):
+    def __init__(self, out_size=10):
         super(Model, self).__init__()
         self.model = nn.Sequential(
             nn.Conv2d(in_channels=1, out_channels=8, kernel_size=3, padding=2, stride=1),   
@@ -20,13 +20,13 @@ class Model(Module):
             nn.ReLU(),
             nn.Linear(240, 172),
             nn.ReLU(),
-            nn.Linear(172, 10),
+            nn.Linear(172, out_size),
         )
 
     def __getitem__(self, index):
         return self.model[index]
 
     def forward(self, x):
-        w_h = int(sqrt(x.size()[1]))
-        n = int(x.size()[0])
-        return self.model(reshape(x, (n, 1, w_h, w_h)))
+        # w_h = int(sqrt(x.size()[1]))
+        # n = int(x.size()[0])
+        return self.model(x)
