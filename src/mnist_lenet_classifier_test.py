@@ -108,8 +108,10 @@ if __name__ == '__main__':
         f.write(RESULTS_HEADER + '\n')
         f.close()
 
-    # for i, loader in enumerate([load_mnist, load_fashionmnist, load_norb]):
-    for i, loader in enumerate([load_norb]):
+    for i, loader in enumerate([load_mnist, load_fashionmnist, load_norb]):
+        if loader in [load_mnist, load_norb]:
+            continue
+
         data = loader()
 
         for name, model in models.items():

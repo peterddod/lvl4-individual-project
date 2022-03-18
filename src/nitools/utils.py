@@ -118,7 +118,7 @@ def load_cifar10(scaled=True, label_smoothing=0.1, augment=False, zca_whitening=
         'test_y': test_y,
     }
 
-def load_fashionmnist(scaled=True, label_smoothing=0.1, augment=True, zca_whitening=False):
+def load_fashionmnist(scaled=True, label_smoothing=0.1, augment=False, zca_whitening=False):
     (train_X, train_y), (test_X, test_y) = fashion_mnist.load_data()
 
     train_X = reshape(from_numpy(train_X), (-1, 1, 28, 28))
