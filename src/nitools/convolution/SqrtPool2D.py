@@ -41,11 +41,7 @@ class SqrtPool2D(nn.Module):
         return padding
     
     def forward(self, x):
-        torch.cuda.empty_cache()
         # using existing pytorch functions and tensor ops so that we get autograd, 
         # would likely be more efficient to implement from scratch at C/Cuda level
-        x = F.pad(x, self._padding(x), mode='reflect')
-        x = x.unfold(2, self.k[0], self.stride[0]).unfold(3, self.k[1], self.stride[1])
-        x = x.contiguous().view(x.size()[:4] + (-1,))
-        x = torch.square(x).sum(dim=-1).sqrt()
-        return x
+        x = F.pad(x, self._padding(x), mode='constant')
+        return F.lp_pool2d(x, 2, kernel_size=self.k, stride=self.stride)
