@@ -26,7 +26,6 @@ class Pipeline():
                     X = temp
                 except:
                     X = module(X)
-                print(X.size())
         
         return X
             
