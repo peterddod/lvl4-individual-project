@@ -187,7 +187,7 @@ def elm_lrf_dispatch(name, model, dataset, dataset_id, seed, file):
     file(results)
 
 
-def run(seeds):
+def run(seeds=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]):
     iter_file = FileWriter('iter_results', 'name,dataset,epochs,seed,acc,train_time,test_time')
     ours_file = FileWriter('ours_results', 'name,dataset,h_size,subnets,seed,acc,train_time,test_time')
     elmlrf_file = FileWriter('elmlrf_results', 'name,dataset,seed,acc,train_time,test_time')
